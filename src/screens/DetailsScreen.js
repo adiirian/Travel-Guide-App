@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { View, Text, StyleSheet, Button, ScrollView, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Button, ScrollView, Image, Linking } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import { getWeatherByLocation } from '../services/weatherService';
 
 // Mock images for Bohol spots (in a real app, these would be actual image URLs)
 const spotImages = {
@@ -20,29 +19,28 @@ const spotImages = {
 export default function DetailsScreen({ navigation }) {
   const route = useRoute();
   const { spot } = route.params;
-  const [weather, setWeather] = useState(null);
-  const [loadingWeather, setLoadingWeather] = useState(true);
-  const [weatherError, setWeatherError] = useState(null);
-
-  useEffect(() => {
-    loadWeather();
-  }, []);
-
-  const loadWeather = async () => {
-    setLoadingWeather(true);
-    try {
-      const weatherData = await getWeatherByLocation(spot.latitude, spot.longitude);
-      setWeather(weatherData);
-    } catch (error) {
-      console.error('Error loading weather:', error);
-      setWeatherError('Failed to load weather data. Please check your internet connection.');
-    } finally {
-      setLoadingWeather(false);
-    }
-  };
 
   const navigateToMap = () => {
-    navigation.navigate('MainTabs', { screen: 'Map', params: { spot } });
+    const coordinates = {
+      '1': { lat: 9.8297, lng: 124.1397 }, // Chocolate Hills
+      '2': { lat: 9.6268, lng: 123.8056 }, // Panglao Beach
+      '3': { lat: 9.6912, lng: 123.9529 }, // Tarsier Conservation Area
+      '4': { lat: 9.6348, lng: 124.0298 }, // Loboc River Cruise
+      '5': { lat: 9.6229, lng: 123.9125 }, // Baclayon Church
+      '6': { lat: 10.0623, lng: 124.3421 }, // Trinidad Kawasan Falls
+      '7': { lat: 9.6273, lng: 123.8788 }, // Blood Compact Shrine
+      '8': { lat: 9.5757, lng: 123.8271 }, // Bohol Bee Farm
+      '9': { lat: 9.7417, lng: 124.5758 }, // Anda White Long Beach
+    };
+
+    const coord = coordinates[spot.id];
+    if (coord) {
+      const url = `https://www.google.com/maps/search/?api=1&query=${coord.lat},${coord.lng}`;
+      Linking.openURL(url);
+    } else {
+      const url = `https://www.google.com/maps/search/?api=1&query=Bohol,Philippines`;
+      Linking.openURL(url);
+    }
   };
 
   const navigateToWeather = () => {
@@ -86,22 +84,7 @@ export default function DetailsScreen({ navigation }) {
           <Text style={styles.detailValue}>{spot.bestTime || 'Anytime'}</Text>
         </View>
 
-        <View style={styles.weatherSection}>
-          <Text style={styles.sectionTitle}>Current Weather</Text>
-          {loadingWeather ? (
-            <ActivityIndicator size="small" color="#007AFF" />
-          ) : weatherError ? (
-            <Text style={styles.weatherError}>{weatherError}</Text>
-          ) : weather ? (
-            <View style={styles.weatherContainer}>
-              <Text style={styles.weatherTemp}>{Math.round(weather.main.temp)}°C</Text>
-              <Text style={styles.weatherDesc}>{weather.weather[0].description}</Text>
-              <Text style={styles.weatherDetails}>
-                Humidity: {weather.main.humidity}% | Wind: {weather.wind.speed} m/s
-              </Text>
-            </View>
-          ) : null}
-        </View>
+
 
         <View style={styles.recommendationsSection}>
           <Text style={styles.sectionTitle}>Travel Recommendations</Text>
@@ -176,47 +159,11 @@ const styles = StyleSheet.create({
     color: '#2c3e50',
     marginBottom: 5,
   },
-  weatherSection: {
-    backgroundColor: 'white',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 20,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#3498db',
     marginBottom: 10,
-  },
-  weatherContainer: {
-    alignItems: 'center',
-  },
-  weatherTemp: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#007AFF',
-    marginBottom: 5,
-  },
-  weatherDesc: {
-    fontSize: 16,
-    color: '#34495e',
-    textTransform: 'capitalize',
-    marginBottom: 5,
-  },
-  weatherDetails: {
-    fontSize: 14,
-    color: '#7f8c8d',
-  },
-  weatherError: {
-    fontSize: 14,
-    color: '#e74c3c',
-    textAlign: 'center',
   },
   recommendationsSection: {
     backgroundColor: 'white',
