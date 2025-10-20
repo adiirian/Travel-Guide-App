@@ -1,8 +1,0 @@
-- [ ] Create .env file with environment variables for API keys
-- [ ] Update app.json to use environment variables instead of hardcoded keys
-- [ ] Update src/services/weatherService.js to use environment variables
-- [ ] Update src/config/firebase.js to use environment variables
-- [ ] Ensure .gitignore includes .env and related files
-- [ ] Clean git history to remove exposed API keys from previous commits
-- [ ] Advise user to regenerate API keys for security
-- [ ] Commit the changes and push to repository
