@@ -7,7 +7,7 @@ import Constants from 'expo-constants';
 
 // Firebase config from Firebase Console
 const firebaseConfig = {
-  apiKey: Constants.expoConfig?.extra?.FIREBASE_API_KEY || process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY || Constants.expoConfig?.extra?.FIREBASE_API_KEY,
   authDomain: "travel-guide-app-b48df.firebaseapp.com",
   projectId: "travel-guide-app-b48df",
   storageBucket: "travel-guide-app-b48df.firebasestorage.app",

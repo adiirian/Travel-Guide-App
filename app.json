@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "Travel_Guide_App",
+    "slug": "Travel_Guide_App",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "googleMapsApiKey": "${GOOGLE_MAPS_API_KEY}"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "googleMaps": {
+        "apiKey": "${GOOGLE_MAPS_API_KEY}"
+      },
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "OPENWEATHER_API_KEY": "${EXPO_PUBLIC_OPENWEATHER_API_KEY}",
+      "FIREBASE_API_KEY": "${EXPO_PUBLIC_FIREBASE_API_KEY}",
+      "GOOGLE_MAPS_API_KEY": "${EXPO_PUBLIC_GOOGLE_MAPS_API_KEY}"
+    }
+  }
+}
