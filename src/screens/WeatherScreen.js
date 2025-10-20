@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { View, Text, StyleSheet, Alert, Button, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Button, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRoute } from '@react-navigation/native';
-import { getWeatherByLocation, getWeatherByCity } from '../services/weatherService';
+import { getWeatherByLocation } from '../services/weatherService';
 
 export default function WeatherScreen({ navigation }) {
   const route = useRoute();
@@ -25,40 +25,39 @@ export default function WeatherScreen({ navigation }) {
         lat = spot.latitude;
         lng = spot.longitude;
       } else {
-        // Default to Tagbilaran, Bohol, Philippines (capital city) for accurate location display~
-        const weatherData = await getWeatherByCity('Tagbilaran,PH');
-        setWeather(weatherData);
-        return;
+        // Default to Tagbilaran, Bohol, Philippines (capital city) for accurate location display
+        lat = 9.6538;
+        lng = 123.8535;
       }
       const weatherData = await getWeatherByLocation(lat, lng);
       setWeather(weatherData);
     } catch (err) {
       setError(err.message || 'Failed to load weather data. Please check your internet connection.');
-      Alert.alert('Weather Error', err.message || 'Failed to load weather data. Please check your internet connection.');
     } finally {
       setLoading(false);
     }
   };
 
-  const navigateToHome = () => {
-    navigation.navigate('MainTabs', { screen: 'Home' });
+  const navigateToGuides = () => {
+    navigation.navigate('MainTabs', { screen: 'Guides' });
   };
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <LinearGradient colors={['#87CEEB', '#4682B4']} style={styles.container}>
         <ActivityIndicator size="large" color="#007AFF" />
         <Text style={styles.loadingText}>Loading weather...</Text>
-      </View>
+      </LinearGradient>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.container}>
+      <LinearGradient colors={['#87CEEB', '#4682B4']} style={styles.container}>
         <Text style={styles.errorText}>Error: {error}</Text>
         <Button title="Retry" onPress={loadWeather} />
-      </View>
+        <Button title="Back to Guides" onPress={navigateToGuides} />
+      </LinearGradient>
     );
   }
 
@@ -67,7 +66,7 @@ export default function WeatherScreen({ navigation }) {
       <Text style={styles.title}>Current Weather</Text>
       {weather && (
         <View style={styles.weatherContainer}>
-          <Text style={styles.city}>{weather.name}</Text>
+          <Text style={styles.city}>{spot ? spot.title : 'Tagbilaran, Bohol'}</Text>
           <Text style={styles.temperature}>{Math.round(weather.main.temp)}°C</Text>
           <Text style={styles.description}>{weather.weather[0].description}</Text>
           <Text style={styles.details}>Humidity: {weather.main.humidity}%</Text>
@@ -75,7 +74,7 @@ export default function WeatherScreen({ navigation }) {
         </View>
       )}
       <Button title="Refresh" onPress={loadWeather} />
-      <Button title="Back to Home" onPress={navigateToHome} />
+      <Button title="Back to Guides" onPress={navigateToGuides} />
     </LinearGradient>
   );
 }
