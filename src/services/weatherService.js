@@ -4,13 +4,14 @@ const BASE_URL = 'https://api.open-meteo.com/v1/forecast';
 
 export async function getWeatherByLocation(lat, lng) {
   try {
-    const response = await axios.get(`${BASE_URL}?latitude=${lat}&longitude=${lng}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,windspeed_10m&timezone=auto`);
+    const response = await axios.get(`${BASE_URL}?latitude=${lat}&longitude=${lng}&current_weather=true&hourly=temperature_2m,relative_humidity_2m,windspeed_10m,pressure_msl,surface_pressure,visibility&timezone=auto`);
     const data = response.data;
     // Transform to match OpenWeather format for compatibility
     return {
       main: {
         temp: data.current_weather.temperature,
         humidity: data.hourly.relative_humidity_2m ? data.hourly.relative_humidity_2m[0] : null,
+        pressure: data.hourly.pressure_msl ? data.hourly.pressure_msl[0] : null,
       },
       weather: [{
         description: data.current_weather.weathercode ? getWeatherDescription(data.current_weather.weathercode) : 'Unknown',
@@ -18,6 +19,7 @@ export async function getWeatherByLocation(lat, lng) {
       wind: {
         speed: data.current_weather.windspeed,
       },
+      visibility: data.hourly.visibility ? data.hourly.visibility[0] : null,
     };
   } catch (error) {
     throw new Error('Failed to fetch weather: ' + error.message);

@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { View, Text, FlatList, StyleSheet, Alert, TouchableOpacity, ScrollView, Image, Button } from 'react-native';
+
 import { fetchGuides } from '../services/guidesService';
 
 // Mock images for Bohol spots (in a real app, these would be actual image URLs)
 const spotImages = {
-  '1': require('../../assets/images/tourist-spots/chocolate-hills.jpg'),
-  '2': require('../../assets/images/tourist-spots/panglao.jpg'),
-  '3': require('../../assets/images/tourist-spots/tarsier.jpg'),
+  '1': require('../../assets/images/tourist-spots/chocolate-hills2.jpg'),
+  '2': require('../../assets/images/tourist-spots/panglao beach.jpg'),
+  '3': require('../../assets/images/tourist-spots/tarsier-conservation-area-bohol.jpg'),
   '4': require('../../assets/images/tourist-spots/loboc.jpg'),
-  '5': require('../../assets/images/tourist-spots/baclayon.jpg'),
-  '6': require('../../assets/images/tourist-spots/kawasan.jpg'),
-  '7': require('../../assets/images/tourist-spots/bc.jpg'),
-  '8': require('../../assets/images/tourist-spots/bbf.jpg'),
-  '9': require('../../assets/images/tourist-spots/anda.jpg'),
+  '5': require('../../assets/images/tourist-spots/bohol-baclayon-church-love-dot-027.jpg'),
+  '6': require('../../assets/images/tourist-spots/Kawasan-Falls.jpg'),
+  '7': require('../../assets/images/tourist-spots/blood-compact-IMG_5905-2.jpg'),
+  '8': require('../../assets/images/tourist-spots/bohol-bee-farm-1-qloqws7t1ttbhz7tgmfd4th1xlytr1dr4ixqr47qwk.jpg'),
+  '9': require('../../assets/images/tourist-spots/anda b.jpg'),
 };
 
 export default function GuidesScreen({ navigation }) {
@@ -28,12 +29,22 @@ export default function GuidesScreen({ navigation }) {
     setLoading(true);
     try {
       const allGuides = await fetchGuides(); // Fetch all guides
-      setGuides(allGuides);
+      // Add random ratings to guides that don't have them
+      const guidesWithRatings = allGuides.map(guide => ({
+        ...guide,
+        rating: guide.rating || getRandomRating()
+      }));
+      setGuides(guidesWithRatings);
     } catch (error) {
       Alert.alert('Error', error.message || 'Failed to load guides');
     } finally {
       setLoading(false);
     }
+  };
+
+  // Generate random rating between 4.0 and 5.0
+  const getRandomRating = () => {
+    return (Math.random() * 1 + 4).toFixed(1);
   };
 
   const navigateToDetails = (spot) => {
@@ -59,28 +70,35 @@ export default function GuidesScreen({ navigation }) {
     return recommendations[spot.id] || ['Explore and enjoy!', 'Take photos', 'Learn about local culture'];
   };
 
-  const renderGuide = ({ item }) => (
-    <TouchableOpacity style={styles.spotCard} onPress={() => navigateToDetails(item)}>
-      <Image source={spotImages[item.id]} style={styles.spotImage} />
-      <View style={styles.spotContent}>
-        <Text style={styles.spotTitle}>{item.title}</Text>
-        <Text style={styles.spotDescription}>{item.description}</Text>
+  const renderGuide = ({ item }) => {
+    return (
+      <TouchableOpacity
+        style={styles.spotCard}
+        onPress={() => navigateToDetails(item)}
+      >
+        <Image source={spotImages[item.id]} style={styles.spotImage} />
+        <View style={styles.spotContent}>
+          <Text style={styles.spotTitle}>{item.title}</Text>
+          <Text style={styles.spotDescription}>
+            {item.description.length > 70 ? `${item.description.substring(0, 70)}...` : item.description}
+          </Text>
 
-        <View style={styles.spotDetails}>
-          <Text style={styles.detailText}>⭐ Rating: {item.rating || 'N/A'}/5</Text>
-          <Text style={styles.detailText}>💰 Entry: {item.entryFee || 'Free'}</Text>
-          <Text style={styles.detailText}>⏰ Best Time: {item.bestTime || 'Anytime'}</Text>
-        </View>
+          <View style={styles.spotDetails}>
+            <Text style={styles.detailText}>⭐ Rating: {item.rating}/5</Text>
+            <Text style={styles.detailText}>💰 Entry: {item.entryFee || 'Free'}</Text>
+            <Text style={styles.detailText}>⏰ Best Time: {item.bestTime || 'Anytime'}</Text>
+          </View>
 
-        <View style={styles.recommendations}>
-          <Text style={styles.recommendationsTitle}>💡 Recommendations:</Text>
-          {getRecommendations(item).map((rec, index) => (
-            <Text key={index} style={styles.recommendationText}>• {rec}</Text>
-          ))}
+          <View style={styles.recommendations}>
+            <Text style={styles.recommendationsTitle}>💡 Recommendations:</Text>
+            {getRecommendations(item).map((rec, index) => (
+              <Text key={index} style={styles.recommendationText}>• {rec}</Text>
+            ))}
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   if (loading) {
     return (

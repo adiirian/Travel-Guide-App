@@ -3,11 +3,10 @@ import { getAnalytics, isSupported } from "firebase/analytics";
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore } from 'firebase/firestore';
-import Constants from 'expo-constants';
 
-// Firebase config from Firebase Console
+// Hardcoded Firebase config
 const firebaseConfig = {
-  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY || Constants.expoConfig?.extra?.FIREBASE_API_KEY,
+  apiKey: "AIzaSyDehev3owKiUHOFFRIQN1YrqvAtRVodn9g",
   authDomain: "travel-guide-app-b48df.firebaseapp.com",
   projectId: "travel-guide-app-b48df",
   storageBucket: "travel-guide-app-b48df.firebasestorage.app",

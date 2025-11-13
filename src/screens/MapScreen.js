@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { View, Text, StyleSheet, Alert, TouchableOpacity, Animated } from 'react-native';
+import { View, StyleSheet, Alert, TouchableOpacity, Linking } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
+import Constants from 'expo-constants';
 import { Ionicons } from '@expo/vector-icons';
+import { theme } from '../styles/theme';
+import { spotCoordinates } from '../constants/spots';
 
 export default function MapScreen({ navigation }) {
   const route = useRoute();
@@ -18,12 +21,17 @@ export default function MapScreen({ navigation }) {
   const [userLocation, setUserLocation] = useState(null);
   const [pois, setPois] = useState([]);
   const [permissionGranted, setPermissionGranted] = useState(false);
-  const [titleOpacity] = useState(new Animated.Value(1));
-  const [subtitleOpacity] = useState(new Animated.Value(1));
+  const [currentLocation, setCurrentLocation] = useState(null);
 
   useEffect(() => {
     requestLocationPermission();
   }, []);
+
+  useEffect(() => {
+    if (permissionGranted && spot) {
+      getCurrentLocationForDirections();
+    }
+  }, [permissionGranted, spot]);
 
   useEffect(() => {
     if (permissionGranted) {
@@ -39,13 +47,8 @@ export default function MapScreen({ navigation }) {
         const location = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.High,
         });
-        let lat = location.coords.latitude;
-        let lng = location.coords.longitude;
-        // If location is not in Bohol (approx 9.5-10.5 lat, 123.5-125 lng), default to Trinidad, Bohol
-        if (!(lat >= 9.5 && lat <= 10.5 && lng >= 123.5 && lng <= 125)) {
-          lat = 10.05; // Trinidad, Bohol
-          lng = 124.35;
-        }
+        const lat = location.coords.latitude;
+        const lng = location.coords.longitude;
         setUserLocation({
           latitude: lat,
           longitude: lng,
@@ -63,6 +66,41 @@ export default function MapScreen({ navigation }) {
       Alert.alert('Error', 'Failed to request location permission');
       loadPois(); // Load POIs anyway
     }
+  };
+
+  const getCurrentLocationForDirections = async () => {
+    try {
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+      let lat = location.coords.latitude;
+      let lng = location.coords.longitude;
+      // If location is not in Bohol (approx 9.5-10.5 lat, 123.5-125 lng), default to Trinidad, Bohol
+      if (!(lat >= 9.5 && lat <= 10.5 && lng >= 123.5 && lng <= 125)) {
+        lat = 10.05; // Trinidad, Bohol
+        lng = 124.35;
+      }
+      setCurrentLocation({
+        latitude: lat,
+        longitude: lng,
+      });
+    } catch {
+      Alert.alert('Location Error', 'Could not get current location for directions. Using default.');
+      // Fallback to default Bohol location
+      setCurrentLocation({ latitude: 10.05, longitude: 124.35 });
+    }
+  };
+
+  const getDirections = () => {
+    if (!spot || !currentLocation) {
+      Alert.alert('Directions', 'Spot or current location not available. Please try again.');
+      return;
+    }
+    const coord = spotCoordinates[spot.id] || { lat: spot.latitude, lng: spot.longitude };
+    const destinationLat = coord.lat || spot.coords?.lat;
+    const destinationLng = coord.lng || spot.coords?.lng;
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${currentLocation.latitude},${currentLocation.longitude}&destination=${destinationLat},${destinationLng}&travelmode=driving`;
+    Linking.openURL(url).catch(() => Alert.alert('Error', 'Could not open maps.'));
   };
 
   const loadLocationAndPois = async () => {
@@ -201,13 +239,45 @@ export default function MapScreen({ navigation }) {
     navigation.navigate('MainTabs', { screen: 'Home' });
   };
 
+  const getCategoryIcon = (category) => {
+    const icons = {
+      'Natural Wonder': '🌄',
+      'Beach': '🏖️',
+      'Wildlife': '🐒',
+      'Adventure': '🚣',
+      'Historical': '🏛️',
+      'Waterfall': '💦',
+      'Educational': '📚',
+    };
+    return icons[category] || '📍';
+  };
+
+  const getCategoryColor = (category) => {
+    const colors = {
+      'Natural Wonder': 'green',
+      'Beach': 'blue',
+      'Wildlife': 'orange',
+      'Adventure': 'purple',
+      'Historical': 'red',
+      'Waterfall': 'cyan',
+      'Educational': 'yellow',
+    };
+    return colors[category] || 'red';
+  };
+
+  const googleMapsApiKey = Constants.expoConfig?.extra?.GOOGLE_MAPS_API_KEY;
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+
       <MapView
         provider={PROVIDER_GOOGLE}
+        googleMapsApiKey={googleMapsApiKey}
         style={styles.map}
         region={region}
         onRegionChangeComplete={setRegion}
+        onMapReady={() => console.log('Map loaded successfully')}
+        onError={(error) => console.log('Map error:', error)}
         showsUserLocation
         showsMyLocationButton
       >
@@ -219,7 +289,8 @@ export default function MapScreen({ navigation }) {
               longitude: poi.longitude,
             }}
             title={poi.title}
-            description={`${poi.category} • ⭐ ${poi.rating} • ${poi.entryFee}`}
+            description={`${getCategoryIcon(poi.category)} ${poi.category} • ⭐ ${poi.rating} • ${poi.entryFee}`}
+            pinColor={getCategoryColor(poi.category)}
             onPress={() => {
               setRegion({
                 latitude: poi.latitude,
@@ -228,7 +299,7 @@ export default function MapScreen({ navigation }) {
                 longitudeDelta: 0.01,
               });
               Alert.alert(
-                poi.title,
+                `${getCategoryIcon(poi.category)} ${poi.title}`,
                 `${poi.description}\n\n⭐ Rating: ${poi.rating}/5\n⏰ Best Time: ${poi.bestTime}\n💰 Entry Fee: ${poi.entryFee}\n🏷️ Category: ${poi.category}`,
                 [{ text: 'OK' }]
               );
@@ -236,16 +307,16 @@ export default function MapScreen({ navigation }) {
           />
         ))}
       </MapView>
-      <View style={styles.overlay}>
-        <TouchableOpacity style={styles.backButton} onPress={navigateToHome}>
-          <Ionicons name="home" size={20} color="#4A90E2" />
-          <Text style={styles.backButtonText}>Back to Home</Text>
+      {/* Minimized Back to Home Button */}
+      <TouchableOpacity style={styles.minimizedBackButton} onPress={navigateToHome}>
+        <Ionicons name="home" size={24} color={theme.colors.card} />
+      </TouchableOpacity>
+      {/* Directions Button if spot is passed */}
+      {spot && (
+        <TouchableOpacity style={styles.directionsButton} onPress={getDirections}>
+          <Ionicons name="navigate" size={24} color={theme.colors.card} />
         </TouchableOpacity>
-      </View>
-      <View style={styles.floatingText}>
-        <Animated.Text style={[styles.title, { opacity: titleOpacity }]}>Maps & Navigation</Animated.Text>
-        <Animated.Text style={[styles.subtitle, { opacity: subtitleOpacity }]}>Tap markers for POI details. Use navigation for directions.</Animated.Text>
-      </View>
+      )}
     </View>
   );
 }
@@ -264,52 +335,30 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  overlay: {
+  minimizedBackButton: {
     position: 'absolute',
     top: 50,
     left: 20,
-    right: 20,
-    padding: 15,
-    borderRadius: 10,
-  },
-  floatingText: {
-    position: 'absolute',
-    bottom: 20,
-    left: 20,
-    right: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    padding: 15,
-    borderRadius: 10,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 14,
-    textAlign: 'center',
-    marginTop: 5,
-  },
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#4A90E2',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    backgroundColor: theme.colors.primary,
+    width: 50,
+    height: 50,
     borderRadius: 25,
-    marginTop: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...theme.shadows.buttonShadow,
+    zIndex: 1,
   },
-  backButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginLeft: 8,
+  directionsButton: {
+    position: 'absolute',
+    bottom: 80,
+    right: 20,
+    backgroundColor: theme.colors.secondary,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...theme.shadows.buttonShadow,
+    zIndex: 1,
   },
 });

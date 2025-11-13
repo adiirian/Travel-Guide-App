@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, Button, ScrollView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useAuth } from '../context/AuthContext';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, ScrollView, Image } from 'react-native';
+
 import { fetchGuides } from '../services/guidesService';
+import { theme } from '../styles/theme';
 
 export default function HomeScreen({ navigation }) {
-  const { user, logout } = useAuth();
   const [guides, setGuides] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,15 +29,16 @@ export default function HomeScreen({ navigation }) {
     navigation.navigate('Details', { spot });
   };
 
-  const handleLogout = () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Logout', onPress: logout },
-      ]
-    );
+  // Generate random rating between 4.0 and 5.0
+  const getRandomRating = () => {
+    return (Math.random() * 1 + 4).toFixed(1);
+  };
+
+  // Random Filipino names for recommendations
+  const recommenderNames = ['Maria', 'Juan', 'Ana', 'Pedro', 'Rosa', 'Carlos', 'Elena', 'Miguel', 'Sofia', 'Antonio'];
+
+  const getRandomRecommender = () => {
+    return recommenderNames[Math.floor(Math.random() * recommenderNames.length)];
   };
 
   if (loading) {
@@ -49,48 +49,65 @@ export default function HomeScreen({ navigation }) {
     );
   }
 
+  // Spot images for visual appeal
+  const spotImages = {
+    '1': require('../../assets/images/tourist-spots/chocolate-hills.jpg'),
+    '2': require('../../assets/images/tourist-spots/panglao.jpg'),
+    '3': require('../../assets/images/tourist-spots/tarsier.jpg'),
+    '4': require('../../assets/images/tourist-spots/loboc.jpg'),
+    '5': require('../../assets/images/tourist-spots/baclayon.jpg'),
+    '6': require('../../assets/images/tourist-spots/kawasan.jpg'),
+    '7': require('../../assets/images/tourist-spots/bc.jpg'),
+    '8': require('../../assets/images/tourist-spots/bbf.jpg'),
+    '9': require('../../assets/images/tourist-spots/anda.jpg'),
+  };
+
   return (
-    <LinearGradient colors={['#667eea', '#764ba2']} style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.header}>
-          <Text style={styles.welcome}>Welcome to Bohol Travel Guide!</Text>
-          <Text style={styles.userEmail}>Logged in as: {user?.email}</Text>
-          <Button title="Logout" onPress={handleLogout} color="#ff4444" />
+        <View style={[styles.welcomeSection, theme.shadows.cardShadow]}>
+          <Text style={[styles.appTitle, { color: theme.colors.primary }]}>🌴 Maglakbay sa Bohol: Ang Pulong-Pulong ng mga Hiwaga! 🌴</Text>
+          <View style={styles.bulletsContainer}>
+            <Text style={[styles.bullet, { color: theme.colors.secondary }]}>🌄 Iconic Chocolate Hills & Natural Wonders</Text>
+            <Text style={[styles.bullet, { color: theme.colors.secondary }]}>🏖️ Pristine Beaches & Crystal Waters</Text>
+            <Text style={[styles.bullet, { color: theme.colors.secondary }]}>🐒 Wildlife Adventures & Hidden Gems</Text>
+          </View>
+          <Text style={[styles.appDescription, { color: theme.colors.textSecondary }]}>Explore with real-time weather, interactive maps, and insider tips. Your Bohol story starts here! 🏖️</Text>
         </View>
 
-        <View style={styles.welcomeSection}>
-          <Text style={styles.appTitle}>🌴 Discover Bohol&apos;s Hidden Gems 🌴</Text>
-          <Text style={styles.appDescription}>
-            Embark on an unforgettable journey through Bohol Island! Uncover iconic wonders like the Chocolate Hills,
-            dive into crystal-clear waters, explore ancient churches, and meet the world&apos;s smallest primate.
-          </Text>
-          <Text style={styles.appDescription}>
-            Get real-time weather updates, interactive maps, and insider guides for every adventure. Your Bohol story starts here! 🏖️
-          </Text>
-        </View>
-
-        <View style={styles.spotsSection}>
-          <Text style={styles.sectionTitle}>Popular Tourist Spots</Text>
-          <Text style={styles.sectionSubtitle}>Tap any spot to explore details, maps, and weather</Text>
+        <View style={[styles.spotsSection, theme.shadows.cardShadow]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.primary }]}>Popular Tourist Spots</Text>
+          <Text style={[styles.sectionSubtitle, { color: theme.colors.textSecondary }]}>Tap any spot to explore details, maps, and weather</Text>
 
           <FlatList
             data={guides}
             keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={styles.spotItem} onPress={() => navigateToDetails(item)}>
-                <Text style={styles.spotTitle}>{item.title}</Text>
-                <Text style={styles.spotHint}>
-                  {item.description.length > 100 ? `${item.description.substring(0, 100)}...` : item.description}
-                </Text>
-                <Text style={styles.spotTeaser}>Tap to uncover the full adventure! 🌟</Text>
-              </TouchableOpacity>
-            )}
+            renderItem={({ item }) => {
+              return (
+                <TouchableOpacity
+                  style={[styles.spotItem, theme.shadows.cardShadow]}
+                  onPress={() => navigateToDetails(item)}
+                  activeOpacity={0.7}
+                >
+                  <Image source={spotImages[item.id]} style={styles.spotImage} />
+                  <View style={styles.spotHeader}>
+                    <Text style={[styles.spotTitle, { color: theme.colors.text }]}>{item.title}</Text>
+                    <Text style={[styles.spotRating, { color: theme.colors.accent }]}>⭐ {getRandomRating()}/5</Text>
+                  </View>
+                  <Text style={[styles.spotHint, { color: theme.colors.textSecondary }]}>
+                    {item.description.length > 50 ? `${item.description.substring(0, 50)}...` : item.description}
+                  </Text>
+                  <Text style={[styles.spotRecommender, { color: theme.colors.secondary }]}>Recommended by {getRandomRecommender()}</Text>
+                  <Text style={[styles.spotTeaser, { color: theme.colors.textSecondary }]}>Tap to uncover the full adventure! 🌟</Text>
+                </TouchableOpacity>
+              );
+            }}
             scrollEnabled={false}
             style={styles.list}
           />
         </View>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 }
 
@@ -106,6 +123,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
+    paddingBottom: 20,
   },
   header: {
     backgroundColor: 'white',
@@ -127,53 +145,47 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   welcomeSection: {
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.card,
     margin: 20,
     marginTop: 10,
     padding: 20,
     borderRadius: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  },
+  bulletsContainer: {
+    marginBottom: 10,
+  },
+  bullet: {
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: 5,
+    textAlign: 'center',
   },
   appTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#3498db',
     marginBottom: 15,
     textAlign: 'center',
   },
   appDescription: {
-    fontSize: 16,
-    color: '#34495e',
-    lineHeight: 24,
-    marginBottom: 10,
+    fontSize: 14,
+    lineHeight: 20,
     textAlign: 'center',
   },
   spotsSection: {
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.card,
     margin: 20,
     marginTop: 0,
     padding: 20,
     borderRadius: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#2c3e50',
     marginBottom: 5,
     textAlign: 'center',
   },
   sectionSubtitle: {
     fontSize: 14,
-    color: '#7f8c8d',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -181,33 +193,47 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   spotItem: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.colors.background,
     padding: 15,
     marginVertical: 5,
-    borderRadius: 10,
+    borderRadius: 15,
     borderLeftWidth: 4,
-    borderLeftColor: '#3498db',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    borderLeftColor: theme.colors.primary,
+    overflow: 'hidden',
+  },
+  spotImage: {
+    width: '100%',
+    height: 150,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  spotHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 5,
   },
   spotTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#2c3e50',
-    marginBottom: 5,
+    flex: 1,
+  },
+  spotRating: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   spotHint: {
     fontSize: 14,
-    color: '#34495e',
     lineHeight: 20,
+    marginBottom: 5,
+  },
+  spotRecommender: {
+    fontSize: 12,
+    fontStyle: 'italic',
     marginBottom: 5,
   },
   spotTeaser: {
     fontSize: 12,
-    color: '#7f8c8d',
     fontStyle: 'italic',
     textAlign: 'right',
   },

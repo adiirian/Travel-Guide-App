@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+
 import { useAuth } from '../context/AuthContext';
 import AuthNavigator from './AuthNavigator';
 import HomeScreen from '../screens/HomeScreen';
@@ -16,6 +17,8 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 function TabNavigator() {
+  const { logout } = useAuth();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -29,16 +32,20 @@ function TabNavigator() {
           shadowOffset: { width: 0, height: -2 },
           shadowOpacity: 0.1,
           shadowRadius: 4,
-          height: 60,
+          height: 70,
           paddingBottom: 5,
           paddingTop: 5,
+          borderRadius: 25,
+          marginHorizontal: 10,
+          marginBottom: 10,
+          position: 'absolute',
         },
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '600',
         },
         headerStyle: {
-          backgroundColor: '#4A90E2',
+          backgroundColor: '#2E8B57', // Sea green for travel theme
         },
         headerTintColor: '#FFFFFF',
         headerTitleStyle: {
@@ -50,7 +57,13 @@ function TabNavigator() {
         name="Home"
         component={HomeScreen}
         options={{
-          headerShown: false,
+          headerShown: true,
+          headerTitle: 'Bohol Travel Guide',
+          headerRight: () => (
+            <TouchableOpacity onPress={logout} style={{ marginRight: 15 }}>
+              <Ionicons name="log-out" size={24} color="#FFFFFF" />
+            </TouchableOpacity>
+          ),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" color={color} size={size} />
           ),
