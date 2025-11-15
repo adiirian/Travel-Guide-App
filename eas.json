@@ -28,5 +28,8 @@
   },
   "submit": {
     "production": {}
+  },
+  "project": {
+    "name": "Bohol_Travel_Guide_App"
   }
 }
