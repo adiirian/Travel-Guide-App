@@ -111,7 +111,7 @@ export default function GuidesScreen({ navigation }) {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Travel Guides</Text>
+        <Text style={styles.title}>Bohol Travel Guide</Text>
         <Text style={styles.subtitle}>Discover Bohol&apos;s hidden gems with detailed information</Text>
       </View>
 

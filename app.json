@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Travel_Guide_App",
-    "slug": "Travel_Guide_App",
-    "version": "1.0.0",
+    "name": "Bohol_Travel_Guide_App",
+    "slug": "Bohol_Travel_Guide_App",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/map.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "platforms": [
@@ -13,20 +13,21 @@
       "web"
     ],
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/map.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "icon": "./assets/map.png"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/map.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.adiirian.Travel_Guide_App",
+      "package": "com.adiirian.Bohol_Travel_Guide_App",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyCDW8tGs4lYMMNT_LGctiXdeahJ7C3ujRM"
@@ -34,7 +35,7 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/map.png"
     },
     "plugins": [
       [
