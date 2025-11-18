@@ -34,8 +34,8 @@ export default function HomeScreen({ navigation }) {
     return (Math.random() * 1 + 4).toFixed(1);
   };
 
-  // Random Filipino names for recommendations
-  const recommenderNames = ['Maria', 'Juan', 'Ana', 'Pedro', 'Rosa', 'Carlos', 'Elena', 'Miguel', 'Sofia', 'Antonio'];
+  // Team member names for recommendations
+  const recommenderNames = ['Charl Hans Adrian Acuesta', 'Charm Rubion', 'Ashley Joy Besan', 'Ivy Jane Tura', 'Jeziel Ayag', 'Alfred Timothy Marbas', 'Jessamie Patron', 'Eugene Wahing', 'John Lee Ranque', 'Kent Audeemel Manayon'];
 
   const getRandomRecommender = () => {
     return recommenderNames[Math.floor(Math.random() * recommenderNames.length)];

@@ -10,6 +10,7 @@ import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
 import WeatherScreen from '../screens/WeatherScreen';
 import GuidesScreen from '../screens/GuidesScreen';
+import AboutScreen from '../screens/AboutScreen';
 import DetailsScreen from '../screens/DetailsScreen';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -58,7 +59,7 @@ function TabNavigator() {
         component={HomeScreen}
         options={{
           headerShown: true,
-          headerTitle: 'Bohol Travel Guide',
+          headerTitle: 'Maglakbay sa Bohol',
           headerRight: () => (
             <TouchableOpacity onPress={logout} style={{ marginRight: 15 }}>
               <Ionicons name="log-out" size={24} color="#FFFFFF" />
@@ -93,9 +94,19 @@ function TabNavigator() {
         name="Guides"
         component={GuidesScreen}
         options={{
-          title: 'Travel Guides',
+          title: 'Tourist Spots',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="book" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="About"
+        component={AboutScreen}
+        options={{
+          title: 'About',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="information-circle" color={color} size={size} />
           ),
         }}
       />

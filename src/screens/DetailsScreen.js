@@ -93,7 +93,7 @@ export default function DetailsScreen({ navigation }) {
     return (Math.random() * 1 + 4).toFixed(1);
   };
 
-  const recommenderNames = ['Maria', 'Juan', 'Ana', 'Pedro', 'Rosa', 'Carlos', 'Elena', 'Miguel', 'Sofia', 'Antonio'];
+  const recommenderNames = ['Chad', 'Charm', 'Ashley', 'Ivy', 'Jeziel', 'Alfred', 'Jessamie', 'Eugene', 'JohnLee ', 'Kent'];
 
   const getRandomRecommender = () => {
     return recommenderNames[Math.floor(Math.random() * recommenderNames.length)];

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Bohol_Travel_Guide_App",
-    "slug": "Bohol_Travel_Guide_App",
+    "name": "Maglakbay sa Bohol",
+    "slug": "maglakbay-sa-bohol",
     "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/map.png",

@@ -1,5 +1,5 @@
 {
-  "name": "bohol_travel_guide_app",
+  "name": "maglakbay-sa-bohol",
   "license": "0BSD",
   "version": "1.0.0",
   "main": "index.js",
@@ -8,7 +8,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "eslint ./src/**/*.{js,jsx} App.js --no-error-on-unmatched-pattern"
+    "lint": "eslint ./src/**/*.{js,jsx} --no-error-on-unmatched-pattern"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",

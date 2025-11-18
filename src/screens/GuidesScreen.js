@@ -9,7 +9,7 @@ const spotImages = {
   '1': require('../../assets/images/tourist-spots/chocolate-hills2.jpg'),
   '2': require('../../assets/images/tourist-spots/panglao beach.jpg'),
   '3': require('../../assets/images/tourist-spots/tarsier-conservation-area-bohol.jpg'),
-  '4': require('../../assets/images/tourist-spots/loboc.jpg'),
+  '4': require('../../assets/images/tourist-spots/river.jpg'),
   '5': require('../../assets/images/tourist-spots/bohol-baclayon-church-love-dot-027.jpg'),
   '6': require('../../assets/images/tourist-spots/Kawasan-Falls.jpg'),
   '7': require('../../assets/images/tourist-spots/blood-compact-IMG_5905-2.jpg'),
@@ -111,7 +111,7 @@ export default function GuidesScreen({ navigation }) {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Bohol Travel Guide</Text>
+        <Text style={styles.title}>Maglakbay sa Bohol</Text>
         <Text style={styles.subtitle}>Discover Bohol&apos;s hidden gems with detailed information</Text>
       </View>
 
